@@ -9,6 +9,11 @@ export class AppService {
     return this.http
       .get(
         'https://api.github.com/repos/GustavoDeMarinis/github-api-nestjs-reactJs/commits',
+        {
+          headers: {
+            Authorization: `Bearer ${process.env.GITHUB_TOKEN}`,
+          },
+        },
       )
       .pipe(
         map((res) => {

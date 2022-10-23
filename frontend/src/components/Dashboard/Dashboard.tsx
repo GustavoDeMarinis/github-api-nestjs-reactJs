@@ -1,3 +1,6 @@
+import { useEffect, useState } from "react";
+import axios from "axios";
+import moment from "moment";
 import {
   Accordion,
   AccordionButton,
@@ -8,11 +11,22 @@ import {
   Box,
   Center,
   Heading,
+  Text,
 } from "@chakra-ui/react";
 
 const Dashboard: React.FC = () => {
-  const img = "https://avatars.githubusercontent.com/u/47509384?v=4";
-  return (
+  const [commits, setCommits] = useState<any[]>([]);
+
+  const fetchingCommits = async () => {
+    await axios
+      .get("http://localhost:5000/")
+      .then((response) => setCommits(response.data));
+  };
+  useEffect(() => {
+    fetchingCommits();
+  }, []);
+
+  return commits ? (
     <Center bg="#191813" h="100vh" w="100vw">
       <Accordion
         bg="#ffffff"
@@ -23,41 +37,42 @@ const Dashboard: React.FC = () => {
         p="10px"
       >
         <Heading mb="10px">Commits:</Heading>
-        <AccordionItem>
-          <h2>
-            <AccordionButton>
-              <Box flex="1" textAlign="left">
-                <Avatar name="Dan Abrahmov" src={img} />
-              </Box>
-              <AccordionIcon />
-            </AccordionButton>
-          </h2>
-          <AccordionPanel pb={4}>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-            eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim
-            ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut
-            aliquip ex ea commodo consequat.
-          </AccordionPanel>
-        </AccordionItem>
-
-        <AccordionItem>
-          <h2>
-            <AccordionButton>
-              <Box flex="1" textAlign="left">
-                Section 2 title
-              </Box>
-              <AccordionIcon />
-            </AccordionButton>
-          </h2>
-          <AccordionPanel pb={4}>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-            eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim
-            ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut
-            aliquip ex ea commodo consequat.
-          </AccordionPanel>
-        </AccordionItem>
+        {commits.map((commit) => {
+          return (
+            <AccordionItem>
+              <h2>
+                <AccordionButton>
+                  <Box
+                    display="flex"
+                    alignItems="center"
+                    textAlign="left"
+                    w="100%"
+                    justifyContent="space-between"
+                  >
+                    <Box display="flex" alignItems="center" textAlign="left">
+                      <Avatar
+                        name={commit.author.login}
+                        src={commit.author.avatar_url}
+                      />
+                      <Text ml="10px" fontWeight="bold">
+                        {commit.author.login}
+                      </Text>
+                    </Box>
+                    <Text ml="10px" fontWeight="bold">
+                      {moment(commit.author.date).format("h:mm:ss DD/MM/yyyy")}
+                    </Text>
+                  </Box>
+                  <AccordionIcon />
+                </AccordionButton>
+              </h2>
+              <AccordionPanel pb={4}>{commit.commit.message}</AccordionPanel>
+            </AccordionItem>
+          );
+        })}
       </Accordion>
     </Center>
+  ) : (
+    <div>loading</div>
   );
 };
 
