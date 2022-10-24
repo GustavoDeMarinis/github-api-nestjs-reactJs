@@ -3,7 +3,7 @@
 Backend
 - cd backend
 - npm install
-- replace .env GITHUB_TOKEN for the value sent on the email. 
+- replace .env GITHUB_TOKEN for the value sent on the email. (if need a new token request it to gustadema@gmail.com)
 - npm start
 
 Frontend
